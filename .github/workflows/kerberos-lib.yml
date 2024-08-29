@@ -38,7 +38,7 @@ jobs:
     
     - name: Pack NuGet package
       run: |        
-        dotnet pack -c Release -o out /p:Version=${{ steps.version.outputs.BUILD_VERSION }}
+        dotnet pack -c Release -o out /p:Version=${{ steps.version.outputs.VERSION  }}
     
     - name: Push NuGet package
       run: |
