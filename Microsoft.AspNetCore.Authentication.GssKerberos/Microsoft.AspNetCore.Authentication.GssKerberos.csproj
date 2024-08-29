@@ -5,7 +5,7 @@
     <OutputType>Library</OutputType>
     <StartupObject />
 
-    <PackageId>AspNet.Authentication.GssKerberos.</PackageId>
+    <PackageId>AspNet.Authentication.GssKerberos</PackageId>
     <PackageVersion>0.0.0</PackageVersion>
     <Authors>Ian Clegg</Authors>
     <Description>Microsoft ASP.NET SPNEGO GSS Kerberos Authentication</Description>
