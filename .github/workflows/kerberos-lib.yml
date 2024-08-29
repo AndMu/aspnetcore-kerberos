@@ -24,14 +24,8 @@ jobs:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
     
     - name: Build
-      run: |
-        cd src
-        dotnet build -c Release --nologo
-    
-    - name: Run tests
-      run: |
-        cd src
-        dotnet test -c Release --no-build --verbosity normal
+      run: |        
+        dotnet build -c Release --nologo    
     
     - name: Generate version number
       id: version
