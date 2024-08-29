@@ -22,8 +22,7 @@ namespace Microsoft.AspNetCore.Authentication.GssKerberos
         public GssAuthenticationHandler(
             IOptionsMonitor<GssAuthenticationOptions> options,
             ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock) : base(options, logger, encoder, clock)
+            UrlEncoder encoder) : base(options, logger, encoder)
         {
         }
 

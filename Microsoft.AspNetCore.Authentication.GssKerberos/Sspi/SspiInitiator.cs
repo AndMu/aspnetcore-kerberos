@@ -9,7 +9,6 @@ namespace Microsoft.AspNetCore.Authentication.GssKerberos
         private readonly string _target;
         private SecurityHandle _credentials;
         private SecurityHandle _context;
-        private long _expiryTime;
 
         public SspiInitiator(SspiCredentials credentials, string target)
         {
