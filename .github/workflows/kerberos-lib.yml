@@ -9,7 +9,6 @@ env:
   MAJOR_VERSION: '8'
   MINOR_VERSION: '0'
   NUGET_SOURCE: 'https://api.nuget.org/v3/index.json'
-run-name: "${{ env.MAJOR_VERSION }}.${{ env.MINOR_VERSION }}.${{ github.run_number }}"
 
 jobs:
   build_test_pack_push:
