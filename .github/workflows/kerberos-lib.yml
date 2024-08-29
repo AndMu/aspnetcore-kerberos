@@ -2,7 +2,8 @@ name: .NET CI
 on:
   push:
     paths:
-    - '**'    
+    - 'src/**'
+    - '.github/workflows/kerberos-lib.yml'
 env:
   DOTNET_CORE_VERSION: '8.0.x'
   MAJOR_VERSION: '8'
@@ -26,7 +27,12 @@ jobs:
     - name: Set version
       id: set_version
       run: |
-        echo "VERSION=${{ env.MAJOR_VERSION }}.${{ env.MINOR_VERSION }}.${{ github.run_number }}" >> $GITHUB_OUTPUT        
+        if [ ${{ github.ref }} = 'refs/heads/master' ]; then
+          
+          echo "VERSION=${{ env.MAJOR_VERSION }}.${{ env.MINOR_VERSION }}.${{ github.run_number }}" >> $GITHUB_OUTPUT
+        else
+          echo "VERSION=${{ env.MAJOR_VERSION }}.${{ env.MINOR_VERSION }}.${{ github.run_number }}-dev" >> $GITHUB_OUTPUT
+        fi        
 
     - name: Create Git tag
       run: |
@@ -38,16 +44,11 @@ jobs:
     - name: Build
       run: |        
         dotnet build -c Release --nologo        
+
     
     - name: Pack NuGet package
       run: |        
-        if [ ${{ github.ref }} = 'refs/heads/master' ]; then          
-          dotnet pack -c Release -o out /p:Version=${{ steps.set_version.outputs.VERSION }}
-        else
-          dotnet pack -c Release -o out --version-suffix=dev /p:VersionPrefix=${{ steps.set_version.outputs.VERSION }}
-        fi      
-
-        
+        dotnet pack -c Release -o out /p:Version=${{ steps.set_version.outputs.VERSION }}
     
     - name: Push NuGet package
       run: |
