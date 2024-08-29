@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.AspNetCore.Authentication.GssKerberos.Test
 {
@@ -20,10 +22,10 @@ namespace Microsoft.AspNetCore.Authentication.GssKerberos.Test
             var servicePrincipal = "<spn>";
 
             // Aquire MIT Kerberos credentials from the systems configured Keytab
-            var serverCredentials = GssCredentials.FromKeytab(servicePrincipal, CredentialUsage.Accept);
+            //var serverCredentials = GssCredentials.FromKeytab(servicePrincipal, CredentialUsage.Accept);
 
             // Uncomment to use Microsoft SSPI (Windows)
-            // var serverCredentials = new SspiCredentials();
+            var serverCredentials = new SspiCredentials();
 
             services.AddAuthentication(options =>
                     {
@@ -33,16 +35,17 @@ namespace Microsoft.AspNetCore.Authentication.GssKerberos.Test
                 .AddKerberos(options =>
                 {
                     // Use MIT Kerberos GSS (Linux / Windows)
-                    options.AcceptorFactory = () => new GssAcceptor(serverCredentials); 
+                    //options.AcceptorFactory = () => new GssAcceptor(serverCredentials); 
 
                     // Uncomment to use Microsoft SSPI (Windows)
-                    // options.AcceptorFactory = () => new SspiAcceptor(serverCredentials); 
+                    options.AcceptorFactory = () => new SspiAcceptor(serverCredentials); 
                 });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            ArgumentNullException.ThrowIfNull(env);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

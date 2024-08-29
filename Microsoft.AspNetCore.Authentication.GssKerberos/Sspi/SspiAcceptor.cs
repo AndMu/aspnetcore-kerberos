@@ -13,7 +13,6 @@ namespace Microsoft.AspNetCore.Authentication.GssKerberos
     {
         private SecurityHandle _credentials;
         private SecurityHandle _context;
-        private long _expiryTime;
 
         private const uint HTTP_SECURITY_ATTRIBUTES =
             SspiInterop.ISC_REQ_REPLAY_DETECT |

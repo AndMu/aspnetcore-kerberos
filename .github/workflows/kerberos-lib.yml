@@ -1,0 +1,56 @@
+name: .NET CI
+on:
+  push:
+    paths:
+    - 'src/**'
+    - '.github/workflows/kerberos-lib.yml'
+env:
+  DOTNET_CORE_VERSION: '8.0.x'
+  MAJOR_VERSION: '8'
+  MINOR_VERSION: '0'
+  NUGET_SOURCE: 'https://api.nuget.org/v3/index.json'
+jobs:
+  build_test_pack_push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    
+    - name: Build
+      run: |
+        cd src
+        dotnet build -c Release --nologo
+    
+    - name: Run tests
+      run: |
+        cd src
+        dotnet test -c Release --no-build --verbosity normal
+    
+    - name: Generate version number
+      id: version
+      run: |
+        git fetch --tags
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v${{ env.MAJOR_VERSION }}.${{ env.MINOR_VERSION }}.0")
+        COMMIT_COUNT=$(git rev-list ${LAST_TAG}..HEAD --count)
+        VERSION="${LAST_TAG#v}.$COMMIT_COUNT"
+        if [[ "${{ github.ref }}" != "refs/heads/master" ]]; then
+          VERSION="${VERSION}-dev.$(git rev-parse --short HEAD)"
+        fi
+        echo "BUILD_VERSION=$VERSION" >> $GITHUB_OUTPUT
+    
+    - name: Pack NuGet package
+      run: |
+        cd src
+        dotnet pack -c Release -o out /p:Version=${{ steps.version.outputs.BUILD_VERSION }}
+    
+    - name: Push NuGet package
+      run: |
+        cd src/out
+        dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ env.NUGET_SOURCE }} --skip-duplicate
