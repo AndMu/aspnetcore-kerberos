@@ -22,11 +22,7 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
-    
-    - name: Build
-      run: |        
-        dotnet build -c Release --nologo    
-    
+
     - name: Set version
       id: set_version
       run: |
@@ -35,10 +31,23 @@ jobs:
         else
           echo "VERSION=${{ env.MAJOR_VERSION }}.${{ env.MINOR_VERSION }}.${{ github.run_number }}-dev" >> $GITHUB_OUTPUT
         fi
+        echo "BUILD_VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Create Git tag
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git tag -a v${{ steps.set_version.outputs.VERSION }} -m "Version ${{ steps.set_version.outputs.VERSION }}"
+        git push origin v${{ steps.set_version.outputs.VERSION }}
+    
+    - name: Build
+      run: |        
+        dotnet build -c Release --nologo        
+
     
     - name: Pack NuGet package
       run: |        
-        dotnet pack -c Release -o out /p:Version=${{ steps.version.outputs.VERSION  }}
+        dotnet pack -c Release -o out /p:Version=${{ steps.version.outputs.BUILD_VERSION }}
     
     - name: Push NuGet package
       run: |
