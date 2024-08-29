@@ -2,8 +2,7 @@ name: .NET CI
 on:
   push:
     paths:
-    - 'src/**'
-    - '.github/workflows/kerberos-lib.yml'
+    - '**'    
 env:
   DOTNET_CORE_VERSION: '8.0.x'
   MAJOR_VERSION: '8'
@@ -39,7 +38,6 @@ jobs:
     - name: Build
       run: |        
         dotnet build -c Release --nologo        
-
     
     - name: Pack NuGet package
       run: |        
